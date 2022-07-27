@@ -1,0 +1,6 @@
+{
+  "name": "leaflet-heat-local",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "LeafletHeat.js"
+}
