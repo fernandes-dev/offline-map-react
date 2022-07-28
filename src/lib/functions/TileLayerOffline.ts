@@ -1,11 +1,7 @@
-import Leaflet, { Map } from 'leaflet'
+import Leaflet from 'leaflet'
+import {IMakeTileLayerOfflineProps} from "./index.types";
 
-interface IProps {
-  leaflet: typeof Leaflet
-  map: Map
-}
-
-export function MakeTileLayerOffline({map,leaflet,}: IProps): Leaflet.tileLayerOffline | undefined {
+export default function MakeTileLayerOffline({map,leaflet,}: IMakeTileLayerOfflineProps): Leaflet.tileLayerOffline | undefined {
   if (!leaflet.tileLayer?.offline) return undefined
 
   const tileLayerOffline = leaflet.tileLayer?.offline('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

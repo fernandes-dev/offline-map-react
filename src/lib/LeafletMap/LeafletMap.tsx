@@ -8,13 +8,13 @@ import 'leaflet.locatecontrol'
 import 'leaflet.webgl-temperature-map'
 import 'leaflet-heat-local'
 
-import {MakeTileLayerOffline} from '../functions/TileLayerOffline'
+import {MakeTileLayerOffline} from '../functions/'
 import {IHeatPoint, ILeafletMapProps, IPosition} from "./index.types";
 import CheckpointMarker from "../CheckpointMarker";
 
 function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletMapProps) {
   const [map, setMap] = useState<Leaflet.Map>()
-  const [position, setPosition] = useState<IPosition | undefined>(currentPosition)
+  const [userPosition, setUserPosition] = useState<IPosition | undefined>(currentPosition)
 
   const [existsMapControls, setExistsMapControls] = useState<boolean>()
 
@@ -24,12 +24,12 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
   const [progressSaveMap, setProgressSaveMap] = useState(0)
   const [totalLayersToSave, setTotalLayersToSave] = useState(0)
 
-  function navigatoTePosition(data: IPosition, zoomLevel?: number): void {
+  function navigateToPosition(data: IPosition, zoomLevel?: number): void {
     if (data) map?.setView(data, zoomLevel || map.getZoom())
   }
 
   function verifyPolylineExists(destiny: IPosition): boolean {
-    if (!position) return false
+    if (!userPosition) return false
 
     const existsPolyline = polylines.find(p =>
       p.find(p2 => String(p2.lng) === String(destiny.lng) && String(p2.lat) === String(destiny.lat))
@@ -43,14 +43,14 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
 
     const existsPolyline = verifyPolylineExists(destiny)
 
-    if (existsPolyline || !position) return
+    if (existsPolyline || !userPosition) return
 
     if (mapPolyline) {
-      mapPolyline.setLatLngs([...polylines, [destiny, position]])
+      mapPolyline.setLatLngs([...polylines, [destiny, userPosition]])
 
       map.fitBounds(mapPolyline.getBounds())
     } else {
-      const polyline = Leaflet.polyline([...polylines, [destiny, position]], {color: 'red'})
+      const polyline = Leaflet.polyline([...polylines, [destiny, userPosition]], {color: 'red'})
 
       polyline.addTo(map)
 
@@ -58,7 +58,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
       map.fitBounds(polyline.getBounds())
     }
 
-    setPolylines([...polylines, [destiny, position]])
+    setPolylines([...polylines, [destiny, userPosition]])
   }
 
   function handleRemovePolyline(destiny: IPosition) {
@@ -83,7 +83,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
         <CheckpointMarker
           key={marker.id}
           marker={marker}
-          positionToCompare={position}
+          positionToCompare={userPosition}
           iconUrl={checkpointIconUrl}
           checkPointDetails={
             <>
@@ -122,8 +122,8 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
     }, [map])
 
     return (
-      position && (
-        <MapContainer id="map" center={position} zoom={13} ref={setMap} scrollWheelZoom={true}>
+      userPosition && (
+        <MapContainer id="map" center={userPosition} zoom={13} ref={setMap} scrollWheelZoom={true}>
           <TileLayer
             id="mapbox/streets-v11"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -141,7 +141,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
       navigator.geolocation.getCurrentPosition(e => {
         const currentPosition = {lng: e.coords.longitude, lat: e.coords.latitude}
 
-        setPosition(currentPosition)
+        setUserPosition(currentPosition)
       })
     else window.alert('Seu dispositivo não tem suporte a geolocalização')
   }
@@ -186,17 +186,18 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
       .addTo(map)
 
     map.on('locationfound', e => {
-      setPosition(e.latlng)
+      setUserPosition(e.latlng)
     })
   }
 
   return {
     renderMap,
     setMapViewOnUserLocation,
-    navigatoTePosition,
+    navigateToPosition,
     addHeatPoints,
     progressSaveMap,
     totalLayersToSave,
+    userPosition,
     map
   }
 }

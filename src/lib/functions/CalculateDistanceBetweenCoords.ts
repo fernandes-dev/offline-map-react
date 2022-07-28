@@ -2,7 +2,7 @@ import {ICoords} from "../LeafletMap/index.types";
 
 const deg2rad = (deg: number) => deg * (Math.PI / 180)
 
-export function CalculateDistanceBetweenCoords(firstPosition?: ICoords, secondPosition?: ICoords): number {
+export default function CalculateDistanceBetweenCoords(firstPosition?: ICoords, secondPosition?: ICoords): number {
   if (!firstPosition || !secondPosition) return 0
 
   const R = 6371

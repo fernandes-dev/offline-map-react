@@ -14,14 +14,50 @@
   </a>
 </p>
 
-> Projeto desenvolvido com ReactJS e Leaflet para visualizar pontos específicos no mapa e pontos de calor, com ausência de conexão com internet.
+> Project make with ReactJS and Leaflet to show specified points and heat points in the map, without active internet connexion.
 
 ### ✨ [Demo](https://offline-map.netlify.app)
+
+## Used Libs
+* [Leaflet JS v1.8.0](https://leafletjs.com)
+* [React Leaflet v4.0.0](https://react-leaflet.js.org/)
+* [Leaflet.LocateControl v0.76.1](https://github.com/domoritz/leaflet-locatecontrol)
+* [Leaflet.Offline v2](https://github.com/allartk/leaflet.offline)
+* [Leaflet.WebglTemperatureMap v0.2.0](https://github.com/sanchezweezer/Leaflet.webGlTemperatureMap#readme)
+* [Leaflet.Heat](https://github.com/Leaflet/Leaflet.heat/blob/gh-pages/dist/leaflet-heat.js)
 
 ## Install
 
 ```sh
 npm i offline-map-react
+```
+
+#### Add following Leaflet CDN in your index.html
+```html
+<head>
+    ...
+
+  <!--  LEAFLET -->
+  <link href='https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css' rel='stylesheet'/>
+  <script
+    charset='utf-8'
+    src='https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js'
+  ></script>
+
+  <link
+    crossorigin=''
+    href='https://unpkg.com/leaflet@1.8.0/dist/leaflet.css'
+    integrity='sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=='
+    rel='stylesheet'
+  />
+  <script
+    crossorigin=''
+    integrity='sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=='
+    src='https://unpkg.com/leaflet@1.8.0/dist/leaflet.js'
+  ></script>
+
+    ...
+</head>
 ```
 
 ## Usage
@@ -31,42 +67,18 @@ import React, {useEffect, useState} from 'react';
 import './App.css';
 
 import {OfflineMap} from 'offline-map-react'
-import {ICheckpoint, IPosition} from "offline-map-react/dist/cjs/types/src/lib/LeafletMap/index.types";
-
+import {ICheckpoint} from "offline-map-react/dist/cjs/types/src/lib/LeafletMap/index.types";
 
 function App() {
-  // create the necessary react states
-  const [map, setMap] = useState()
-  const [existsMapControls, setExistsMapControls] = useState(false)
-  const [totalLayersToSave, setTotalLayersToSave] = useState(0)
-  const [progressSaveMap, setProgressSaveMap] = useState(0)
-  const [polylines, setPolylines] = useState<IPosition[][]>([])
-  const [mapPolyline, setMapPolyline] = useState<IPosition[]>()
   const [checkpoints, setCheckpoints] = useState<ICheckpoint[]>([])
-  const [position, setPosition] = useState<IPosition | undefined>()
 
-  // create offline map instance
   const OfflineMapInstance = OfflineMap({
-    mapState: {map, setMap,},
-    existsMapControlsState: {existsMapControls, setExistsMapControls,},
-    totalLayerToSaveState: {setTotalLayersToSave,},
-    progressSaveMapState: {setProgressSaveMap,},
-    polylineState: {setPolylines, polylines,},
-    mapPolylineState: {mapPolyline, setMapPolyline,},
-    checkpointState: {checkpoints,},
-    positionState: {position, setPosition,},
+    checkpoints,
   })
-
 
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition(position => {
-      // get current user position to set in map view
-      setPosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      })
-
-      // example to create an checkpoint
+      // checkpoints will be renderer in map
       setCheckpoints([{
         position: {lat: 40.750749, lng: -74.077218},
         id: Math.random(),
@@ -76,20 +88,50 @@ function App() {
   }, [])
 
   useEffect(() => {
-    // verify if map exists to add offline controls
-    if (map) OfflineMapInstance.addUserLocationHandler()
-  }, [map])
+    // create heat points if map instance exists
+    OfflineMapInstance.addHeatPoints([
+      {
+        lat: 40.750749,
+        lng: -74.077218,
+        intensity: 20, // 0 to 100
+      }
+    ])
+
+    // set map view on user location
+    OfflineMapInstance.setMapViewOnUserLocation()
+
+  }, [OfflineMapInstance.map])
 
   return (
     <div className="App">
-      {/* call te function to render map */}
-      {OfflineMapInstance.renderMap()}
+      {/* saved tiles number */}
+      {OfflineMapInstance.progressSaveMap}
+
+      {/* number of total tiles to save */}
+      {OfflineMapInstance.totalLayersToSave}
+
+      {/* call te function to render the map */}
+      {OfflineMapInstance.renderMap(
+        //    can be pass any children if is a valid React Leaflet child
+      )}
     </div>
   );
 
 }
 
 export default App;
+
+```
+
+## Style
+
+* Without "height" property the map will be not render
+
+
+```css
+#map {
+  height: 500px;
+}
 ```
 
 ## Author

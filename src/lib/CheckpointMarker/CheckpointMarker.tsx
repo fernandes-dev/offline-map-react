@@ -1,7 +1,7 @@
 import {Marker, Popup} from 'react-leaflet'
 import React from 'react'
 import {Icon} from 'leaflet'
-import {CalculateDistanceBetweenCoords} from '../functions/CalculateDistanceBetweenCoords'
+import {CalculateDistanceBetweenCoords} from '../functions/'
 import {ICheckpointMarkerProps} from "./index.types";
 
 function CheckpointMarker({marker, checkPointDetails, positionToCompare, iconUrl}: ICheckpointMarkerProps) {
