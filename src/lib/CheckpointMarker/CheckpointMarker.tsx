@@ -4,7 +4,7 @@ import {Icon} from 'leaflet'
 import {CalculateDistanceBetweenCoords} from '../functions/CalculateDistanceBetweenCoords'
 import {ICheckpointMarkerProps} from "./index.types";
 
-function CheckpointMarker({marker, checkPointDetails, positionToCompare}: ICheckpointMarkerProps) {
+function CheckpointMarker({marker, checkPointDetails, positionToCompare, iconUrl}: ICheckpointMarkerProps) {
   const distanceInMeters = CalculateDistanceBetweenCoords(marker.position, positionToCompare)
   const distanceInKm = distanceInMeters > 0 ? (distanceInMeters / 1000).toFixed(2) : 0
 
@@ -13,7 +13,7 @@ function CheckpointMarker({marker, checkPointDetails, positionToCompare}: ICheck
       position={marker.position}
       icon={
         new Icon({
-          iconUrl: '../icons/circle-icon.png',
+          iconUrl: iconUrl || 'https://i.imgur.com/yxwt71l.png',
           iconSize: [25, 25],
         })
       }

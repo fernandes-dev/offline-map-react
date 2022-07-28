@@ -5,4 +5,5 @@ export interface ICheckpointMarkerProps {
   marker: ICheckpoint
   checkPointDetails?: ReactNode
   positionToCompare?: ICoords
+  iconUrl?: string | undefined | null
 }

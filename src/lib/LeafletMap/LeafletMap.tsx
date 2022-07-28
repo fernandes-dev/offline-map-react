@@ -1,27 +1,28 @@
 /* eslint-disable no-alert */
 import {MapContainer, TileLayer} from 'react-leaflet'
-import React from 'react'
+import React, {ReactNode, useEffect, useState} from 'react'
 import Leaflet from 'leaflet'
 
 import 'leaflet.offline'
 import 'leaflet.locatecontrol'
 import 'leaflet.webgl-temperature-map'
-// import '../../externals/LeafletHeat/LeafletHeat.js'
+import 'leaflet-heat-local'
 
 import {MakeTileLayerOffline} from '../functions/TileLayerOffline'
-import {ILeafletMapProps, IPosition} from "./index.types";
+import {IHeatPoint, ILeafletMapProps, IPosition} from "./index.types";
 import CheckpointMarker from "../CheckpointMarker";
 
-function LeafletMap({
-                      positionState: {position, setPosition},
-                      checkpointState: {checkpoints},
-                      mapPolylineState: {mapPolyline, setMapPolyline},
-                      polylineState: {polylines, setPolylines},
-                      progressSaveMapState: {setProgressSaveMap},
-                      totalLayerToSaveState: {setTotalLayersToSave,},
-                      mapState: {map, setMap},
-                      existsMapControlsState: {existsMapControls, setExistsMapControls}
-                    }: ILeafletMapProps) {
+function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletMapProps) {
+  const [map, setMap] = useState<Leaflet.Map>()
+  const [position, setPosition] = useState<IPosition | undefined>(currentPosition)
+
+  const [existsMapControls, setExistsMapControls] = useState<boolean>()
+
+  const [mapPolyline, setMapPolyline] = useState<Leaflet.Polyline<any, any> | undefined>()
+  const [polylines, setPolylines] = useState<IPosition[][]>([])
+
+  const [progressSaveMap, setProgressSaveMap] = useState(0)
+  const [totalLayersToSave, setTotalLayersToSave] = useState(0)
 
   function navigatoTePosition(data: IPosition, zoomLevel?: number): void {
     if (data) map?.setView(data, zoomLevel || map.getZoom())
@@ -83,6 +84,7 @@ function LeafletMap({
           key={marker.id}
           marker={marker}
           positionToCompare={position}
+          iconUrl={checkpointIconUrl}
           checkPointDetails={
             <>
               <h3>{marker.text}</h3>
@@ -107,15 +109,27 @@ function LeafletMap({
     )
   }
 
-  const renderMap = () => {
+  const renderMap = (...children: ReactNode[]) => {
+    useEffect(() => {
+      if (map && !existsMapControls) {
+        addOfflineMapControls()
+        addUserLocationHandler()
+      }
+
+      return () => {
+        setExistsMapControls(false)
+      }
+    }, [map])
+
     return (
       position && (
-        <MapContainer id="map" center={position} zoom={13} ref={setMap} scrollWheelZoom={false}>
+        <MapContainer id="map" center={position} zoom={13} ref={setMap} scrollWheelZoom={true}>
           <TileLayer
             id="mapbox/streets-v11"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          {children?.length > 0 && children}
           {renderCheckpoints()}
         </MapContainer>
       )
@@ -133,28 +147,31 @@ function LeafletMap({
   }
 
   function addOfflineMapControls(): void {
-    if (map && !existsMapControls) {
-      const tileLayerOffline = MakeTileLayerOffline({leaflet: Leaflet, map})
+    if (!map || existsMapControls) return
 
-      tileLayerOffline?.on('savestart', e => {
-        setTotalLayersToSave(e.lengthToBeSaved)
-      })
+    const tileLayerOffline = MakeTileLayerOffline({leaflet: Leaflet, map})
 
-      tileLayerOffline?.on('savetileend', () => {
-        setProgressSaveMap(currentProgress => currentProgress + 1)
-      })
+    tileLayerOffline?.on('savestart', e => {
+      setTotalLayersToSave(e.lengthToBeSaved)
+    })
 
-      const points = [
-        ...checkpoints.map(c => {
-          return [Number(c?.position.lat), Number(c?.position.lng), 50]
-        }),
-      ]
+    tileLayerOffline?.on('savetileend', () => {
+      setProgressSaveMap(currentProgress => currentProgress + 1)
+    })
 
-      // @ts-ignore
-      Leaflet.heatLayer(points, {radius: 50}).addTo(map)
+    setExistsMapControls(true)
+  }
 
-      setExistsMapControls(true)
-    }
+  function addHeatPoints(points: IHeatPoint[], radius?: number) {
+    if (!map) return
+
+    const parsedPoints = [
+      ...points.map(c => {
+        return [Number(c?.lat), Number(c?.lng), c.intensity]
+      }),
+    ]
+    // @ts-ignore
+    Leaflet.heatLayer(parsedPoints, {radius: radius || 50}).addTo(map)
   }
 
   function addUserLocationHandler(): void {
@@ -173,7 +190,15 @@ function LeafletMap({
     })
   }
 
-  return {renderMap, setMapViewOnUserLocation, navigatoTePosition, addOfflineMapControls, addUserLocationHandler}
+  return {
+    renderMap,
+    setMapViewOnUserLocation,
+    navigatoTePosition,
+    addHeatPoints,
+    progressSaveMap,
+    totalLayersToSave,
+    map
+  }
 }
 
 export default LeafletMap

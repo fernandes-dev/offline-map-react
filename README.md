@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to offline-map-react 👋</h1>
+<h1 style="text-align: center">Welcome to offline-map-react 👋</h1>
 <p>
   <a href="https://www.npmjs.com/package/offline-map-react" target="_blank">
     <img alt="Version" src="https://img.shields.io/npm/v/offline-map-react.svg">
@@ -24,6 +24,74 @@
 npm i offline-map-react
 ```
 
+## Usage
+
+```tsx
+import React, {useEffect, useState} from 'react';
+import './App.css';
+
+import {OfflineMap} from 'offline-map-react'
+import {ICheckpoint, IPosition} from "offline-map-react/dist/cjs/types/src/lib/LeafletMap/index.types";
+
+
+function App() {
+  // create the necessary react states
+  const [map, setMap] = useState()
+  const [existsMapControls, setExistsMapControls] = useState(false)
+  const [totalLayersToSave, setTotalLayersToSave] = useState(0)
+  const [progressSaveMap, setProgressSaveMap] = useState(0)
+  const [polylines, setPolylines] = useState<IPosition[][]>([])
+  const [mapPolyline, setMapPolyline] = useState<IPosition[]>()
+  const [checkpoints, setCheckpoints] = useState<ICheckpoint[]>([])
+  const [position, setPosition] = useState<IPosition | undefined>()
+
+  // create offline map instance
+  const OfflineMapInstance = OfflineMap({
+    mapState: {map, setMap,},
+    existsMapControlsState: {existsMapControls, setExistsMapControls,},
+    totalLayerToSaveState: {setTotalLayersToSave,},
+    progressSaveMapState: {setProgressSaveMap,},
+    polylineState: {setPolylines, polylines,},
+    mapPolylineState: {mapPolyline, setMapPolyline,},
+    checkpointState: {checkpoints,},
+    positionState: {position, setPosition,},
+  })
+
+
+  useEffect(() => {
+    window.navigator.geolocation.getCurrentPosition(position => {
+      // get current user position to set in map view
+      setPosition({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      })
+
+      // example to create an checkpoint
+      setCheckpoints([{
+        position: {lat: 40.750749, lng: -74.077218},
+        id: Math.random(),
+        text: 'Ponto de Controle 1'
+      }])
+    })
+  }, [])
+
+  useEffect(() => {
+    // verify if map exists to add offline controls
+    if (map) OfflineMapInstance.addUserLocationHandler()
+  }, [map])
+
+  return (
+    <div className="App">
+      {/* call te function to render map */}
+      {OfflineMapInstance.renderMap()}
+    </div>
+  );
+
+}
+
+export default App;
+```
+
 ## Author
 
 👤 **Eduardo Fernandes**
@@ -34,7 +102,8 @@ npm i offline-map-react
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/fernandes-dev/offline-map-react/issues).
+Contributions, issues and feature requests are welcome!<br />Feel free to
+check [issues page](https://github.com/fernandes-dev/offline-map-react/issues).
 
 ## Show your support
 
