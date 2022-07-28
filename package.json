@@ -1,6 +1,32 @@
 {
   "name": "offline-map-react",
   "version": "2.1.2",
+  "readmeFilename": "README.md" ,
+  "keywords": [
+    "leaflet",
+    "offline map",
+    "map",
+    "react",
+    "heat",
+    "location"
+  ],
+  "tags": [
+    "leaflet",
+    "offline map",
+    "map",
+    "react",
+    "heat",
+    "location"
+  ],
+  "author": {
+    "name": "Eduardo Fernandes",
+    "email": "eduardo.yugan@gmail.com",
+    "homepage": "https://linkedin.com/in/fernandes-dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fernandes-dev/offline-map-react"
+  },
   "type": "module",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
