@@ -12,7 +12,9 @@ import {MakeTileLayerOffline} from '../functions/'
 import {IHeatPoint, ILeafletMapProps, IPosition} from "./index.types";
 import CheckpointMarker from "../CheckpointMarker";
 
-function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletMapProps) {
+function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWindow}: ILeafletMapProps) {
+  const thisWindow: Window = parentWindow || window
+
   const [map, setMap] = useState<Leaflet.Map>()
   const [userPosition, setUserPosition] = useState<IPosition | undefined>(currentPosition)
 
@@ -137,13 +139,13 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl}: ILeafletM
   }
 
   function setMapViewOnUserLocation(): void {
-    if (window.navigator.geolocation)
-      navigator.geolocation.getCurrentPosition(e => {
+    if (thisWindow.navigator.geolocation)
+      thisWindow.navigator.geolocation.getCurrentPosition(e => {
         const currentPosition = {lng: e.coords.longitude, lat: e.coords.latitude}
 
         setUserPosition(currentPosition)
       })
-    else window.alert('Seu dispositivo não tem suporte a geolocalização')
+    else thisWindow.alert('Seu dispositivo não tem suporte a geolocalização')
   }
 
   function addOfflineMapControls(): void {

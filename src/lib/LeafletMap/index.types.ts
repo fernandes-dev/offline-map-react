@@ -17,6 +17,7 @@ export interface ILeafletMapProps {
   currentPosition?: IPosition | undefined
   checkpoints: ICheckpoint[]
   checkpointIconUrl?: string | null | undefined
+  parentWindow?: Window
 }
 
 export interface IHeatPoint {
