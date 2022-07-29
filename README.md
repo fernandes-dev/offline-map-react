@@ -141,15 +141,12 @@ export default App;
   ```tsx
   import {OfflineMap} from "offline-map-react";
 
-  import {IPosition} from "offline-map-react/src/lib/LeafletMap/index.types";
-
-  function Map(userPosition: IPosition) {
+  function Map() {
     const mapInstance = OfflineMap({
-      checkpoints: [] /* pass your checkpoints */,
-      currentPosition: userPosition
+      checkpoints: [], // pass your checkpoints
     })
 
-    return (mapInstance.renderMap({/* Optional -- Pass valid React Leaflet children */}))
+    return (mapInstance.renderMap({/* Optional: Pass valid React Leaflet children */}))
   }
 
   export default Map
@@ -158,15 +155,14 @@ export default App;
   `DynamicMap.tsx`
   ```tsx
   import dynamic from 'next/dynamic'
-  import {IPosition} from "offline-map-react/src/lib/LeafletMap/index.types";
 
-  function DynamicMap(userPosition: IPosition) {
+  function DynamicMap() {
     const DynamicComponentWithNoSSR = dynamic(
       () => import('./Map'),
       {ssr: false}
     )
     return (
-      <DynamicComponentWithNoSSR {...userPosition} />
+      <DynamicComponentWithNoSSR />
     )
   }
 
@@ -181,25 +177,14 @@ export default App;
   import type {NextPage} from 'next'
   import Head from 'next/head'
   import styles from '../styles/Home.module.css'
-  import {useEffect, useState} from "react";
   import DynamicMap from "./DynamicMap";
-  import {IPosition} from "offline-map-react/src/lib/LeafletMap/index.types";
 
   const Home: NextPage = () => {
-    const [userPosition, setUserPosition] = useState<IPosition>()
-
-    useEffect(() => {
-      window.navigator.geolocation.getCurrentPosition(position => setUserPosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      }))
-    }, [])
-
     return (
       <div className={styles.container}>
         <Head>{/* your header and Leaflet CDN's */}</Head>
         <main className={styles.main}>
-          {userPosition && <DynamicMap {...userPosition}/>}
+          <DynamicMap />
         </main>
         <footer className={styles.footer}>
           footer
