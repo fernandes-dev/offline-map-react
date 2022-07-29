@@ -125,14 +125,92 @@ export default App;
 
 ## Style
 
-* Without "height" property the map will be not render
+* Without "height" and "width" property the map will be not render
 
 
 ```css
 #map {
-  height: 500px;
+  height: 400px;
+  width: 800px;
 }
 ```
+
+## NextJS Support
+- ### 1º Create "Map" component
+  `Map.tsx`
+  ```tsx
+  import {OfflineMap} from "offline-map-react";
+
+  import {IPosition} from "offline-map-react/src/lib/LeafletMap/index.types";
+
+  function Map(userPosition: IPosition) {
+    const mapInstance = OfflineMap({
+      checkpoints: [], currentPosition: userPosition
+    })
+
+    return (mapInstance.renderMap({/* Optional -- Pass valid React Leaflet children */}))
+  }
+
+  export default Map
+  ```
+- ### 2º Create "DynamicMap" component
+  `DynamicMap.tsx`
+  ```tsx
+  import dynamic from 'next/dynamic'
+  import {IPosition} from "offline-map-react/src/lib/LeafletMap/index.types";
+
+
+  function DynamicMap(userPosition: IPosition) {
+    const DynamicComponentWithNoSSR = dynamic(
+      () => import('./Map'),
+      {ssr: false}
+    )
+    return (
+      <DynamicComponentWithNoSSR {...userPosition} />
+    )
+  }
+
+  export default DynamicMap
+
+  ```
+
+- ### 3º Use the DynamicMap component in your screen component
+  `Home.tsx`
+
+  ```tsx
+  import type {NextPage} from 'next'
+  import Head from 'next/head'
+  import styles from '../styles/Home.module.css'
+  import {useEffect, useState} from "react";
+  import DynamicMap from "./DynamicMap";
+  import {IPosition} from "offline-map-react/src/lib/LeafletMap/index.types";
+
+  const Home: NextPage = () => {
+    const [userPosition, setUserPosition] = useState<IPosition>()
+
+    useEffect(() => {
+      window.navigator.geolocation.getCurrentPosition(position => setUserPosition({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      }))
+    }, [])
+
+    return (
+      <div className={styles.container}>
+        <Head>{/* your header and Leaflet CDN's */}</Head>
+        <main className={styles.main}>
+          {userPosition && <DynamicMap {...userPosition}/>}
+        </main>
+        <footer className={styles.footer}>
+          footer
+        </footer>
+      </div>
+    )
+  }
+
+  export default Home
+  ```
+
 
 ## Author
 

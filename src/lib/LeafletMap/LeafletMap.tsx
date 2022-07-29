@@ -113,6 +113,15 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
 
   const renderMap = (...children: ReactNode[]) => {
     useEffect(() => {
+      if (!userPosition) {
+        thisWindow.navigator.geolocation.getCurrentPosition(position => setUserPosition({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        }))
+      }
+    }, [])
+
+    useEffect(() => {
       if (map && !existsMapControls) {
         addOfflineMapControls()
         addUserLocationHandler()
