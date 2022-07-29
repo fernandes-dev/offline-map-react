@@ -145,7 +145,8 @@ export default App;
 
   function Map(userPosition: IPosition) {
     const mapInstance = OfflineMap({
-      checkpoints: [], currentPosition: userPosition
+      checkpoints: [] /* pass your checkpoints */,
+      currentPosition: userPosition
     })
 
     return (mapInstance.renderMap({/* Optional -- Pass valid React Leaflet children */}))
@@ -158,7 +159,6 @@ export default App;
   ```tsx
   import dynamic from 'next/dynamic'
   import {IPosition} from "offline-map-react/src/lib/LeafletMap/index.types";
-
 
   function DynamicMap(userPosition: IPosition) {
     const DynamicComponentWithNoSSR = dynamic(
