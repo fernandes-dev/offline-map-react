@@ -5,8 +5,6 @@ import Leaflet from 'leaflet'
 
 import 'leaflet.offline'
 import 'leaflet.locatecontrol'
-import 'heat-local'
-import 'leaflet-heat-local'
 
 import {MakeTileLayerOffline} from '../functions/'
 import {IHeatPoint, ILeafletMapProps, IPosition} from "./index.types";
@@ -42,27 +40,34 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
     return !!existsPolyline
   }
 
-  function addHeatLayer() {
-    const cfg = {
-      radius: 0.005,
-      maxOpacity: 100,
-      scaleRadius: true,
-      useLocalExtrema: true,
-      latField: 'lat',
-      lngField: 'lng',
-      valueField: 'intensity',
+  async function addHeatLayer() {
+    if((thisWindow as any).L) {
+      await import('heat-local')
+      await import('leaflet-heat-local')
+
+      const cfg = {
+        radius: 0.005,
+        maxOpacity: 100,
+        scaleRadius: true,
+        useLocalExtrema: true,
+        latField: 'lat',
+        lngField: 'lng',
+        valueField: 'intensity',
+      }
+
+      // @ts-ignore
+      // eslint-disable-next-line no-undef
+      const heatLayer = new HeatmapOverlay(cfg)
+
+      map?.addLayer(heatLayer)
+
+      setHeatmapLayer(heatLayer)
     }
-
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    const heatLayer = new HeatmapOverlay(cfg)
-
-    map?.addLayer(heatLayer)
-
-    setHeatmapLayer(heatLayer)
   }
 
   function addHeatPoints(heatPoints: IHeatPoint[]) {
+    if(!heatmapLayer) throw new Error('Heatmap layer not found')
+
     const heatPointsData = {
       max: 8,
       data: heatPoints,
