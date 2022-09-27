@@ -89,13 +89,8 @@ function App() {
 
   useEffect(() => {
     // create heat points if map instance exists
-    OfflineMapInstance.addHeatPoints([
-      {
-        lat: 40.750749,
-        lng: -74.077218,
-        intensity: 20, // 0 to 100
-      }
-    ])
+    // [lat, lng, intensity]
+    OfflineMapInstance.addHeatPoints([40.750749, -74.077218, 0.5])
 
     // set map view on user location
     OfflineMapInstance.setMapViewOnUserLocation()
