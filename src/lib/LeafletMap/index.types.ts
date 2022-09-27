@@ -20,8 +20,4 @@ export interface ILeafletMapProps {
   parentWindow?: Window
 }
 
-export interface IHeatPoint {
-  lat: number
-  lng: number
-  intensity: number
-}
+export type IHeatPoint = [number, number, number]

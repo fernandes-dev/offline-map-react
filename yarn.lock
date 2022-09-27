@@ -1071,14 +1071,6 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-"heat-local@file:src/externals/HeatMap":
-  version "0.0.0"
-
-heatmap.js@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/heatmap.js/-/heatmap.js-2.0.5.tgz#466d3b86513f5d49112a49d25700ab2730149153"
-  integrity sha512-CG2gYFP5Cv9IQCXEg3ZRxnJDyAilhWnQlAuHYGuWVzv6mFtQelS1bR9iN80IyDmFECbFPbg6I0LR5uAFHgCthw==
-
 icss-replace-symbols@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/icss-replace-symbols/-/icss-replace-symbols-1.1.0.tgz"

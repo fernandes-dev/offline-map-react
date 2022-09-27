@@ -1,6 +1,6 @@
 {
   "name": "offline-map-react",
-  "version": "2.3.8",
+  "version": "2.3.9",
   "readmeFilename": "README.md",
   "keywords": [
     "leaflet",
@@ -47,8 +47,6 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.0.0",
-    "heat-local": "file:src/externals/HeatMap",
-    "heatmap.js": "^2.0.5",
     "leaflet": "1.8.0",
     "leaflet-heat-local": "file:src/externals/LeafletHeat",
     "leaflet.locatecontrol": "0.76.1",
