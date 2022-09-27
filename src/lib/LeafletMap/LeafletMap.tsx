@@ -24,6 +24,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
 
   const [progressSaveMap, setProgressSaveMap] = useState(0)
   const [totalLayersToSave, setTotalLayersToSave] = useState(0)
+  const [heatPoints, setHeatPoints] = useState<IHeatPoint[]>([])
 
 
   function navigateToPosition(data: IPosition, zoomLevel?: number): void {
@@ -43,14 +44,14 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
   let heatLayer: any
 
   function addHeatLayer() {
-    if (map) {
-      // @ts-ignore
-      heatLayer = Leaflet.heatLayer([], {radius: 50, blur: 25}).addTo(map)
-    }
+    // @ts-ignore
+    heatLayer = Leaflet.heatLayer([], {radius: 50, blur: 25}).addTo(map)
   }
 
   function addHeatPoints(heatPoints: IHeatPoint[]) {
     heatLayer?.setLatLngs(heatPoints)
+
+    setHeatPoints(heatPoints)
   }
 
   function handleAddPolyline(destiny: IPosition): void {
@@ -208,6 +209,8 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
     setMapViewOnUserLocation,
     navigateToPosition,
     addHeatPoints,
+    heatPoints,
+    heatLayer,
     progressSaveMap,
     totalLayersToSave,
     userPosition,
