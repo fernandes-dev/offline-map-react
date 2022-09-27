@@ -1,7 +1,7 @@
 {
   "name": "offline-map-react",
-  "version": "2.2.6",
-  "readmeFilename": "README.md" ,
+  "version": "2.3.6",
+  "readmeFilename": "README.md",
   "keywords": [
     "leaflet",
     "offline map",
@@ -47,7 +47,10 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.0.0",
+    "heat-local": "file:src/externals/HeatMap",
+    "heatmap.js": "^2.0.5",
     "leaflet": "1.8.0",
+    "leaflet-heat-local": "file:src/externals/LeafletHeat",
     "leaflet.locatecontrol": "0.76.1",
     "leaflet.offline": "2.2.0",
     "leaflet.webgl-temperature-map": "0.2.0",
@@ -61,11 +64,10 @@
     "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.4.0",
     "typescript": "^4.6.4",
-    "vite": "^3.0.0",
-    "leaflet-heat-local": "file:src/externals/LeafletHeat",
-    "heat-local": "file:src/externals/HeatMap"
+    "vite": "^3.0.0"
   },
   "peerDependencies": {
     "react": "^18.2.0"
-  }
+  },
+  "dependencies": {}
 }

@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedVariable,JSUnresolvedFunction
+
 /*
 * Leaflet Heatmap Overlay
 *
@@ -9,11 +11,11 @@
   // Supports UMD. AMD, CommonJS/Node.js and browser context
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = factory(
-      require('../node_modules/heatmap.js/build/heatmap'),
+      require('heatmap.js/build/heatmap'),
       require('leaflet')
     )
   } else if (typeof define === 'function' && define.amd) {
-    define(['../node_modules/heatmap.js/build/heatmap', 'leaflet'], factory)
+    define(['heatmap.js/build/heatmap', 'leaflet'], factory)
   } else {
     // browser globals
     if (typeof window.h337 === 'undefined') {

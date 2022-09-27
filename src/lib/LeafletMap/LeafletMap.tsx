@@ -6,7 +6,7 @@ import Leaflet from 'leaflet'
 import 'leaflet.offline'
 import 'leaflet.locatecontrol'
 import 'leaflet.webgl-temperature-map'
-import 'heat-local'
+import 'heatmap.js'
 import 'leaflet-heat-local'
 
 import {MakeTileLayerOffline} from '../functions/'
