@@ -1071,6 +1071,9 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
+"heat-local@file:src/externals/HeatMap":
+  version "0.0.0"
+
 icss-replace-symbols@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/icss-replace-symbols/-/icss-replace-symbols-1.1.0.tgz"

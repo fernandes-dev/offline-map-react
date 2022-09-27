@@ -6,6 +6,7 @@ import Leaflet from 'leaflet'
 import 'leaflet.offline'
 import 'leaflet.locatecontrol'
 import 'leaflet.webgl-temperature-map'
+import 'heat-local'
 import 'leaflet-heat-local'
 
 import {MakeTileLayerOffline} from '../functions/'
@@ -26,6 +27,8 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
   const [progressSaveMap, setProgressSaveMap] = useState(0)
   const [totalLayersToSave, setTotalLayersToSave] = useState(0)
 
+  const [heatmapLayer, setHeatmapLayer] = useState<any>()
+
   function navigateToPosition(data: IPosition, zoomLevel?: number): void {
     if (data) map?.setView(data, zoomLevel || map.getZoom())
   }
@@ -38,6 +41,35 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
     )
 
     return !!existsPolyline
+  }
+
+  function addHeatLayer() {
+    const cfg = {
+      radius: 0.005,
+      maxOpacity: 100,
+      scaleRadius: true,
+      useLocalExtrema: true,
+      latField: 'lat',
+      lngField: 'lng',
+      valueField: 'intensity',
+    }
+
+    // @ts-ignore
+    // eslint-disable-next-line no-undef
+    const heatLayer = new HeatmapOverlay(cfg)
+
+    map?.addLayer(heatLayer)
+
+    setHeatmapLayer(heatLayer)
+  }
+
+  function addHeatPoints(heatPoints: IHeatPoint[]) {
+    const heatPointsData = {
+      max: 8,
+      data: heatPoints,
+    }
+
+    heatmapLayer.setData(heatPointsData)
   }
 
   function handleAddPolyline(destiny: IPosition): void {
@@ -125,6 +157,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
       if (map && !existsMapControls) {
         addOfflineMapControls()
         addUserLocationHandler()
+        addHeatLayer()
       }
 
       return () => {
@@ -173,17 +206,17 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
     setExistsMapControls(true)
   }
 
-  function addHeatPoints(points: IHeatPoint[], radius?: number) {
-    if (!map) return
-
-    const parsedPoints = [
-      ...points.map(c => {
-        return [Number(c?.lat), Number(c?.lng), c.intensity]
-      }),
-    ]
-    // @ts-ignore
-    Leaflet.heatLayer(parsedPoints, {radius: radius || 50}).addTo(map)
-  }
+  // function addHeatPoints(points: IHeatPoint[], radius?: number) {
+  //   if (!map) return
+  //
+  //   const parsedPoints = [
+  //     ...points.map(c => {
+  //       return [Number(c?.lat), Number(c?.lng), c.intensity]
+  //     }),
+  //   ]
+  //   // @ts-ignore
+  //   Leaflet.heatLayer(parsedPoints, {radius: radius || 50}).addTo(map)
+  // }
 
   function addUserLocationHandler(): void {
     if (!map) return
