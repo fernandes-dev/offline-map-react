@@ -30,7 +30,8 @@ export default [{
     typescript({tsconfig: './tsconfig.json'}),
     postcss(),
     terser()
-  ]
+  ],
+  inlineDynamicImports: true
 }, {
   input: 'dist/esm/types/src/main.d.ts',
   output: [{file: 'dist/index.d.ts', format: "esm"}],
