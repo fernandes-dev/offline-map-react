@@ -11,30 +11,36 @@ import {MakeTileLayerOffline} from '../functions/'
 import {IHeatPoint, ILeafletMapProps, IPosition} from "./index.types";
 import CheckpointMarker from "../CheckpointMarker";
 
-function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWindow, heatPoints: heatPointsProp}: ILeafletMapProps) {
+function LeafletMap({
+                      currentPosition,
+                      checkpoints,
+                      checkpointIconUrl,
+                      parentWindow,
+                      heatPoints
+                    }: ILeafletMapProps) {
   const thisWindow: Window = parentWindow || window
 
-  const [map, setMap] = useState<Leaflet.Map>()
-  const [userPosition, setUserPosition] = useState<IPosition | undefined>(currentPosition)
+  const [_map, _setMap] = useState<Leaflet.Map>()
+  const [_userPosition, _setUserPosition] = useState<IPosition | undefined>(currentPosition)
 
-  const [existsMapControls, setExistsMapControls] = useState<boolean>()
+  const [_existsMapControls, _setExistsMapControls] = useState<boolean>()
 
-  const [mapPolyline, setMapPolyline] = useState<Leaflet.Polyline<any, any> | undefined>()
-  const [polylines, setPolylines] = useState<IPosition[][]>([])
+  const [_mapPolyline, _setMapPolyline] = useState<Leaflet.Polyline<any, any> | undefined>()
+  const [_polylines, _setPolylines] = useState<IPosition[][]>([])
 
-  const [progressSaveMap, setProgressSaveMap] = useState(0)
-  const [totalLayersToSave, setTotalLayersToSave] = useState(0)
-  const [heatPoints, setHeatPoints] = useState<IHeatPoint[]>(heatPointsProp || [])
+  const [_progressSaveMap, _setProgressSaveMap] = useState(0)
+  const [_totalLayersToSave, _setTotalLayersToSave] = useState(0)
+  const [_heatPoints, _setHeatPoints] = useState<IHeatPoint[]>(heatPoints || [])
 
 
   function navigateToPosition(data: IPosition, zoomLevel?: number): void {
-    if (data) map?.setView(data, zoomLevel || map.getZoom())
+    if (data) _map?.setView(data, zoomLevel || _map.getZoom())
   }
 
   function verifyPolylineExists(destiny: IPosition): boolean {
-    if (!userPosition) return false
+    if (!_userPosition) return false
 
-    const existsPolyline = polylines.find(p =>
+    const existsPolyline = _polylines.find(p =>
       p.find(p2 => String(p2.lng) === String(destiny.lng) && String(p2.lat) === String(destiny.lat))
     )
 
@@ -45,51 +51,51 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
 
   function addHeatLayer() {
     // @ts-ignore
-    heatLayer = Leaflet.heatLayer(heatPoints, {radius: 50, blur: 25}).addTo(map)
+    heatLayer = Leaflet.heatLayer(_heatPoints, {radius: 50, blur: 25}).addTo(map)
   }
 
-  function addHeatPoints(heatPoints: IHeatPoint[]) {
+  function handleSetHeatPoints(heatPoints: IHeatPoint[]) {
     heatLayer?.setLatLngs(heatPoints)
 
-    setHeatPoints(heatPoints)
+    _setHeatPoints(heatPoints)
   }
 
   function handleAddPolyline(destiny: IPosition): void {
-    if (!map) return
+    if (!_map) return
 
     const existsPolyline = verifyPolylineExists(destiny)
 
-    if (existsPolyline || !userPosition) return
+    if (existsPolyline || !_userPosition) return
 
-    if (mapPolyline) {
-      mapPolyline.setLatLngs([...polylines, [destiny, userPosition]])
+    if (_mapPolyline) {
+      _mapPolyline.setLatLngs([..._polylines, [destiny, _userPosition]])
 
-      map.fitBounds(mapPolyline.getBounds())
+      _map.fitBounds(_mapPolyline.getBounds())
     } else {
-      const polyline = Leaflet.polyline([...polylines, [destiny, userPosition]], {color: 'red'})
+      const polyline = Leaflet.polyline([..._polylines, [destiny, _userPosition]], {color: 'red'})
 
-      polyline.addTo(map)
+      polyline.addTo(_map)
 
-      setMapPolyline(polyline)
-      map.fitBounds(polyline.getBounds())
+      _setMapPolyline(polyline)
+      _map.fitBounds(polyline.getBounds())
     }
 
-    setPolylines([...polylines, [destiny, userPosition]])
+    _setPolylines([..._polylines, [destiny, _userPosition]])
   }
 
   function handleRemovePolyline(destiny: IPosition) {
-    if (!map) return
+    if (!_map) return
 
-    const polygonIndex = polylines.findIndex(p =>
+    const polygonIndex = _polylines.findIndex(p =>
       p.find(p2 => String(p2.lng) === String(destiny.lng) && String(p2.lat) === String(destiny.lat))
     )
 
-    const newPolylines = [...polylines]
+    const newPolylines = [..._polylines]
     newPolylines.splice(polygonIndex, 1)
 
-    mapPolyline?.setLatLngs(newPolylines)
+    _mapPolyline?.setLatLngs(newPolylines)
 
-    setPolylines(newPolylines)
+    _setPolylines(newPolylines)
   }
 
   const renderCheckpoints = () => {
@@ -99,7 +105,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
         <CheckpointMarker
           key={marker.id}
           marker={marker}
-          positionToCompare={userPosition}
+          positionToCompare={_userPosition}
           iconUrl={checkpointIconUrl}
           checkPointDetails={
             <>
@@ -127,8 +133,8 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
 
   const renderMap = (...children: ReactNode[]) => {
     useEffect(() => {
-      if (!userPosition) {
-        thisWindow.navigator.geolocation.getCurrentPosition(position => setUserPosition({
+      if (!_userPosition) {
+        thisWindow.navigator.geolocation.getCurrentPosition(position => _setUserPosition({
           lat: position.coords.latitude,
           lng: position.coords.longitude
         }))
@@ -136,20 +142,20 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
     }, [])
 
     useEffect(() => {
-      if (map && !existsMapControls) {
+      if (_map && !_existsMapControls) {
         addOfflineMapControls()
         addUserLocationHandler()
         addHeatLayer()
       }
 
       return () => {
-        setExistsMapControls(false)
+        _setExistsMapControls(false)
       }
-    }, [map])
+    }, [_map])
 
     return (
-      userPosition && (
-        <MapContainer id="map" center={userPosition} zoom={13} ref={setMap} scrollWheelZoom={true}>
+      _userPosition && (
+        <MapContainer id="map" center={_userPosition} zoom={13} ref={_setMap} scrollWheelZoom={true}>
           <TileLayer
             id="mapbox/streets-v11"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -167,29 +173,29 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
       thisWindow.navigator.geolocation.getCurrentPosition(e => {
         const currentPosition = {lng: e.coords.longitude, lat: e.coords.latitude}
 
-        setUserPosition(currentPosition)
+        _setUserPosition(currentPosition)
       })
     else thisWindow.alert('Seu dispositivo não tem suporte a geolocalização')
   }
 
   function addOfflineMapControls(): void {
-    if (!map || existsMapControls) return
+    if (!_map || _existsMapControls) return
 
-    const tileLayerOffline = MakeTileLayerOffline({leaflet: Leaflet, map})
+    const tileLayerOffline = MakeTileLayerOffline({leaflet: Leaflet, map: _map})
 
     tileLayerOffline?.on('savestart', e => {
-      setTotalLayersToSave(e.lengthToBeSaved)
+      _setTotalLayersToSave(e.lengthToBeSaved)
     })
 
     tileLayerOffline?.on('savetileend', () => {
-      setProgressSaveMap(currentProgress => currentProgress + 1)
+      _setProgressSaveMap(currentProgress => currentProgress + 1)
     })
 
-    setExistsMapControls(true)
+    _setExistsMapControls(true)
   }
 
   function addUserLocationHandler(): void {
-    if (!map) return
+    if (!_map) return
 
     Leaflet.control
       .locate({
@@ -197,10 +203,10 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
           popup: ({distance}: { distance: number; unit: number }) => `você está a ${distance} metros deste ponto.`,
         },
       })
-      .addTo(map)
+      .addTo(_map)
 
-    map.on('locationfound', e => {
-      setUserPosition(e.latlng)
+    _map.on('locationfound', e => {
+      _setUserPosition(e.latlng)
     })
   }
 
@@ -208,13 +214,13 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
     renderMap,
     setMapViewOnUserLocation,
     navigateToPosition,
-    addHeatPoints,
-    heatPoints,
+    setHeatPoints: handleSetHeatPoints,
+    heatPoints: _heatPoints,
     heatLayer,
-    progressSaveMap,
-    totalLayersToSave,
-    userPosition,
-    map
+    progressSaveMap: _progressSaveMap,
+    totalLayersToSave: _totalLayersToSave,
+    userPosition: _userPosition,
+    map: _map
   }
 }
 
