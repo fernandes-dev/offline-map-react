@@ -51,7 +51,7 @@ function LeafletMap({
 
   function addHeatLayer() {
     // @ts-ignore
-    heatLayer = Leaflet.heatLayer(_heatPoints, {radius: 50, blur: 25}).addTo(map)
+    heatLayer = Leaflet.heatLayer(_heatPoints, {radius: 50, blur: 25}).addTo(_map)
   }
 
   function handleSetHeatPoints(heatPoints: IHeatPoint[]) {
