@@ -11,7 +11,7 @@ import {MakeTileLayerOffline} from '../functions/'
 import {IHeatPoint, ILeafletMapProps, IPosition} from "./index.types";
 import CheckpointMarker from "../CheckpointMarker";
 
-function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWindow}: ILeafletMapProps) {
+function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWindow, heatPoints: heatPointsProp}: ILeafletMapProps) {
   const thisWindow: Window = parentWindow || window
 
   const [map, setMap] = useState<Leaflet.Map>()
@@ -24,7 +24,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
 
   const [progressSaveMap, setProgressSaveMap] = useState(0)
   const [totalLayersToSave, setTotalLayersToSave] = useState(0)
-  const [heatPoints, setHeatPoints] = useState<IHeatPoint[]>([])
+  const [heatPoints, setHeatPoints] = useState<IHeatPoint[]>(heatPointsProp || [])
 
 
   function navigateToPosition(data: IPosition, zoomLevel?: number): void {
@@ -45,7 +45,7 @@ function LeafletMap({currentPosition, checkpoints, checkpointIconUrl, parentWind
 
   function addHeatLayer() {
     // @ts-ignore
-    heatLayer = Leaflet.heatLayer([], {radius: 50, blur: 25}).addTo(map)
+    heatLayer = Leaflet.heatLayer(heatPoints, {radius: 50, blur: 25}).addTo(map)
   }
 
   function addHeatPoints(heatPoints: IHeatPoint[]) {
