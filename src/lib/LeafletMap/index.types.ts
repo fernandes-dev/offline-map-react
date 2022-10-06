@@ -13,6 +13,8 @@ export interface ICheckpoint {
 
 export type IPosition = Pick<LatLng, 'lat' | 'lng'>
 
+export type IHeatPoint = [number, number, number]
+
 export interface ILeafletMapProps {
   currentPosition?: IPosition | undefined
   checkpoints: ICheckpoint[]
@@ -20,5 +22,3 @@ export interface ILeafletMapProps {
   checkpointIconUrl?: string | null | undefined
   parentWindow?: Window
 }
-
-export type IHeatPoint = [number, number, number]
