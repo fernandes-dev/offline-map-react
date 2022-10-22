@@ -21,4 +21,5 @@ export interface ILeafletMapProps {
   heatPoints?: IHeatPoint[] | undefined
   checkpointIconUrl?: string | null | undefined
   parentWindow?: Window
+  maxMapZoom?: number
 }
