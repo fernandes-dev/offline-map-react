@@ -109,6 +109,30 @@ function App() {
       {OfflineMapInstance.renderMap(
         //    can be pass any children if is a valid React Leaflet child
       )}
+
+      {/* custom buttons to save and delete map from cache */}
+      <button onClick={
+          () => mapInstance?.offlineMapControls().saveCurrentMapView()
+      }>
+        Salvar Mapa
+      </button>
+
+      <button onClick={
+          () => mapInstance?.offlineMapControls().deleteCurrentMapView()
+      }>
+        Excluir Mapa
+      </button>
+
+      {/* progress bar when save map */}
+      {
+        mapInstance?.progressSaveMap > 0 && (
+          <progress id="file"
+                    value={Number((mapInstance?.progressSaveMap / mapInstance?.totalLayersToSave) * 100).toFixed(2)}
+                    max="100">
+            {Number((mapInstance?.progressSaveMap / mapInstance?.totalLayersToSave) * 100).toFixed(2)}%
+          </progress>
+        )
+      }
     </div>
   );
 
