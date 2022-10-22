@@ -1,6 +1,6 @@
 {
   "name": "offline-map-react",
-  "version": "4.4.16",
+  "version": "4.4.18",
   "readmeFilename": "README.md",
   "keywords": [
     "leaflet",
@@ -34,8 +34,7 @@
   "scripts": {
     "dev": "vite",
     "build": "rollup -c",
-    "preview": "vite preview",
-    "publish": "yarn build && npm publish"
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@babel/cli": "^7.18.9",
