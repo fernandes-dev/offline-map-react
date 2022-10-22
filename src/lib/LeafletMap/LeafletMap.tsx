@@ -145,7 +145,10 @@ function LeafletMap({
     }, [])
 
     useEffect(() => {
-      if (_progressSaveMap >= 100) _setProgressSaveMap(0)
+      if (_progressSaveMap >= _totalLayersToSave) {
+        _setProgressSaveMap(0)
+        _setTotalLayersToSave(0)
+      }
     }, [_progressSaveMap])
 
     useEffect(() => {
