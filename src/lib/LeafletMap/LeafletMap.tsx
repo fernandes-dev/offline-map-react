@@ -3,6 +3,8 @@ import {MapContainer, TileLayer} from 'react-leaflet'
 import React, {ReactNode, useEffect, useState} from 'react'
 import Leaflet from 'leaflet'
 
+import './index.css'
+
 import 'leaflet.offline'
 import 'leaflet.locatecontrol'
 import 'leaflet-heat-local'
@@ -16,7 +18,8 @@ function LeafletMap({
                       checkpoints,
                       checkpointIconUrl,
                       parentWindow,
-                      heatPoints
+                      heatPoints,
+                      maxMapZoom = 16
                     }: ILeafletMapProps) {
   const thisWindow: Window = parentWindow || window
 
@@ -142,6 +145,10 @@ function LeafletMap({
     }, [])
 
     useEffect(() => {
+      if (_progressSaveMap >= 100) _setProgressSaveMap(0)
+    }, [_progressSaveMap])
+
+    useEffect(() => {
       if (_map && !_existsMapControls) {
         addOfflineMapControls()
         addUserLocationHandler()
@@ -155,7 +162,8 @@ function LeafletMap({
 
     return (
       _userPosition && (
-        <MapContainer id="map" center={_userPosition} zoom={13} ref={_setMap} scrollWheelZoom={true}>
+        <MapContainer id="map" center={_userPosition} zoom={13} maxZoom={maxMapZoom} ref={_setMap}
+                      scrollWheelZoom={true}>
           <TileLayer
             id="mapbox/streets-v11"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -194,6 +202,23 @@ function LeafletMap({
     _setExistsMapControls(true)
   }
 
+  function offlineMapControls() {
+    return {
+      saveCurrentMapView: () => {
+        const a = document.getElementsByClassName('savetiles')
+
+        ;(a[1] as any)?.click()
+      },
+      deleteCurrentMapView: () => {
+        const b = document.getElementsByClassName('rmtiles')
+
+        ;(b[0] as any)?.click()
+
+        _setTotalLayersToSave(0)
+      }
+    }
+  }
+
   function addUserLocationHandler(): void {
     if (!_map) return
 
@@ -220,7 +245,8 @@ function LeafletMap({
     progressSaveMap: _progressSaveMap,
     totalLayersToSave: _totalLayersToSave,
     userPosition: _userPosition,
-    map: _map
+    map: _map,
+    offlineMapControls
   }
 }
 
