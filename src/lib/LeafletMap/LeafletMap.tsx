@@ -63,7 +63,7 @@ function LeafletMap({
     _setHeatPoints(heatPoints)
   }
 
-  function handleAddPolyline(destiny: IPosition): void {
+  function handleAddPolyline(destiny: IPosition, distanceInMeters: number): void {
     if (!_map) return
 
     const existsPolyline = verifyPolylineExists(destiny)
@@ -71,11 +71,13 @@ function LeafletMap({
     if (existsPolyline || !_userPosition) return
 
     if (_mapPolyline) {
-      _mapPolyline.setLatLngs([..._polylines, [destiny, _userPosition]])
+      _mapPolyline.setLatLngs([[destiny, _userPosition]])
 
       _map.fitBounds(_mapPolyline.getBounds())
     } else {
-      const polyline = Leaflet.polyline([..._polylines, [destiny, _userPosition]], {color: 'red'})
+      const color = distanceInMeters >= 10 ? 'red' : 'green'
+
+      const polyline = Leaflet.polyline([[destiny, _userPosition]], {color})
 
       polyline.addTo(_map)
 
@@ -83,22 +85,15 @@ function LeafletMap({
       _map.fitBounds(polyline.getBounds())
     }
 
-    _setPolylines([..._polylines, [destiny, _userPosition]])
+    _setPolylines([[destiny, _userPosition]])
   }
 
-  function handleRemovePolyline(destiny: IPosition) {
+  function handleRemovePolyline() {
     if (!_map) return
 
-    const polygonIndex = _polylines.findIndex(p =>
-      p.find(p2 => String(p2.lng) === String(destiny.lng) && String(p2.lat) === String(destiny.lat))
-    )
+    _mapPolyline?.setLatLngs([])
 
-    const newPolylines = [..._polylines]
-    newPolylines.splice(polygonIndex, 1)
-
-    _mapPolyline?.setLatLngs(newPolylines)
-
-    _setPolylines(newPolylines)
+    _setPolylines([])
   }
 
   const renderCheckpoints = () => {
@@ -110,25 +105,28 @@ function LeafletMap({
           marker={marker}
           positionToCompare={_userPosition}
           iconUrl={checkpointIconUrl}
-          checkPointDetails={
-            <>
-              <h3>{marker.text}</h3>
-              <div>
-                <b>Coordenadas</b>
-              </div>
-              <div>latitude: {marker.position.lat}</div>
-              <div>longitude: {marker.position.lng}</div>
-              {!verifyPolylineExists(marker.position) ? (
-                <button type="button" onClick={() => handleAddPolyline(marker.position)}>
-                  Marcar rota
-                </button>
-              ) : (
-                <button type="button" onClick={() => handleRemovePolyline(marker.position)}>
-                  Excluir rota
-                </button>
-              )}
-            </>
-          }
+          onClick={(distanceInMeters) => handleAddPolyline(marker.position, distanceInMeters)}
+          checkPointDetails={(distanceInMeters) => {
+            return (
+              <>
+                <h3>{marker.text}</h3>
+                <div>
+                  <b>Coordenadas</b>
+                </div>
+                <div>latitude: {marker.position.lat}</div>
+                <div>longitude: {marker.position.lng}</div>
+                {!verifyPolylineExists(marker.position) ? (
+                  <button type="button" onClick={() => handleAddPolyline(marker.position, distanceInMeters)}>
+                    Marcar rota
+                  </button>
+                ) : (
+                  <button type="button" onClick={() => handleRemovePolyline()}>
+                    Excluir rota
+                  </button>
+                )}
+              </>
+            )
+          }}
         />
       ))
     )
