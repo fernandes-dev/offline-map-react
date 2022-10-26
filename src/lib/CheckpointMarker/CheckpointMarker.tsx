@@ -23,7 +23,7 @@ function CheckpointMarker({marker, checkPointDetails, positionToCompare, iconUrl
       <Popup>
         {checkPointDetails?.(distanceInMeters)}
         <>
-          <div>Distância atual: {distanceInKm} km</div>
+          <div>Distância atual: {distanceInKm} km / {distanceInMeters} m</div>
         </>
       </Popup>
     </Marker>

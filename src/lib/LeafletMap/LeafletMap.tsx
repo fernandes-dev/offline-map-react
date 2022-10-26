@@ -22,6 +22,8 @@ function LeafletMap({
                       maxMapZoom = 16
                     }: ILeafletMapProps) {
   const thisWindow: Window = parentWindow || window
+  const redHexadecimal = '#a73e2b'
+  const greenHexadecimal = '#73b06f'
 
   const [_map, _setMap] = useState<Leaflet.Map>()
   const [_userPosition, _setUserPosition] = useState<IPosition | undefined>(currentPosition)
@@ -75,7 +77,7 @@ function LeafletMap({
 
       _map.fitBounds(_mapPolyline.getBounds())
     } else {
-      const color = distanceInMeters >= 10 ? 'red' : 'green'
+      const color = distanceInMeters >= 10 ? redHexadecimal : greenHexadecimal
 
       const polyline = Leaflet.polyline([[destiny, _userPosition]], {color})
 
