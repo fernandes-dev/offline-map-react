@@ -9,6 +9,7 @@ export interface ICheckpoint {
   id: number
   position: Pick<LatLng, 'lat' | 'lng'>
   text?: string
+  alreadyCollected?: boolean
 }
 
 export type IPosition = Pick<LatLng, 'lat' | 'lng'>
