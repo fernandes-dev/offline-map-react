@@ -106,7 +106,7 @@ function LeafletMap({
           positionToCompare={_userPosition}
           iconUrl={checkpointIconUrl}
           onClick={() => handleAddPolyline(marker.position)}
-          redCheckpoint={marker.alreadyCollected}
+          greenCheckpoint={marker.alreadyCollected}
           checkPointDetails={() => {
             return (
               <>

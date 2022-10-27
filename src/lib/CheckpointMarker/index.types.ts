@@ -7,5 +7,5 @@ export interface ICheckpointMarkerProps {
   positionToCompare?: ICoords
   iconUrl?: string | undefined | null
   onClick?: (distanceInMeters: number) => void
-  redCheckpoint?: boolean
+  greenCheckpoint?: boolean
 }
