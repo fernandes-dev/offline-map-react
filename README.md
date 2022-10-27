@@ -82,7 +82,8 @@ function App() {
       setCheckpoints([{
         position: {lat: 40.750749, lng: -74.077218},
         id: Math.random(),
-        text: 'Ponto de Controle 1'
+        text: 'Ponto de Controle 1',
+        alreadyCollected: false, // default false
       }])
     })
   }, [])
@@ -121,6 +122,13 @@ function App() {
           () => mapInstance?.offlineMapControls().deleteCurrentMapView()
       }>
         Excluir Mapa
+      </button>
+
+      {/* custom button to toggle user location */}
+      <button onClick={
+        () => mapInstance?.offlineMapControls().toggleUserLocation()
+      }>
+        Alternar Localização
       </button>
 
       {/* progress bar when save map */}

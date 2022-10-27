@@ -13,13 +13,15 @@ import {MakeTileLayerOffline} from '../functions/'
 import {IHeatPoint, ILeafletMapProps, IPosition} from "./index.types";
 import CheckpointMarker from "../CheckpointMarker";
 
+const DEFAULT_MAP_ZOOM = 16
+
 function LeafletMap({
                       currentPosition,
                       checkpoints,
                       checkpointIconUrl,
                       parentWindow,
                       heatPoints,
-                      maxMapZoom = 16
+                      maxMapZoom = DEFAULT_MAP_ZOOM
                     }: ILeafletMapProps) {
   const thisWindow: Window = parentWindow || window
 
@@ -36,8 +38,8 @@ function LeafletMap({
   const [_heatPoints, _setHeatPoints] = useState<IHeatPoint[]>(heatPoints || [])
 
 
-  function navigateToPosition(data: IPosition, zoomLevel?: number): void {
-    if (data) _map?.setView(data, zoomLevel || _map.getZoom())
+  function navigateToPosition(position = _userPosition, zoomLevel = DEFAULT_MAP_ZOOM): void {
+    if (position) _map?.setView(position, zoomLevel)
   }
 
   function verifyPolylineExists(destiny: IPosition): boolean {
@@ -215,6 +217,11 @@ function LeafletMap({
         ;(b[0] as any)?.click()
 
         _setTotalLayersToSave(0)
+      },
+      toggleUserLocation: () => {
+        const b = document.getElementsByClassName('leaflet-control-locate-location-arrow')
+
+        ;(b[0] as any)?.click()
       }
     }
   }
