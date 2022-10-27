@@ -22,8 +22,6 @@ function LeafletMap({
                       maxMapZoom = 16
                     }: ILeafletMapProps) {
   const thisWindow: Window = parentWindow || window
-  const redHexadecimal = '#a73e2b'
-  const greenHexadecimal = '#73b06f'
 
   const [_map, _setMap] = useState<Leaflet.Map>()
   const [_userPosition, _setUserPosition] = useState<IPosition | undefined>(currentPosition)
@@ -65,7 +63,7 @@ function LeafletMap({
     _setHeatPoints(heatPoints)
   }
 
-  function handleAddPolyline(destiny: IPosition, distanceInMeters: number): void {
+  function handleAddPolyline(destiny: IPosition): void {
     if (!_map) return
 
     const existsPolyline = verifyPolylineExists(destiny)
@@ -77,9 +75,7 @@ function LeafletMap({
 
       _map.fitBounds(_mapPolyline.getBounds())
     } else {
-      const color = distanceInMeters >= 10 ? redHexadecimal : greenHexadecimal
-
-      const polyline = Leaflet.polyline([[destiny, _userPosition]], {color})
+      const polyline = Leaflet.polyline([[destiny, _userPosition]], {color: 'red'})
 
       polyline.addTo(_map)
 
@@ -107,8 +103,8 @@ function LeafletMap({
           marker={marker}
           positionToCompare={_userPosition}
           iconUrl={checkpointIconUrl}
-          onClick={(distanceInMeters) => handleAddPolyline(marker.position, distanceInMeters)}
-          checkPointDetails={(distanceInMeters) => {
+          onClick={() => handleAddPolyline(marker.position)}
+          checkPointDetails={() => {
             return (
               <>
                 <h3>{marker.text}</h3>
@@ -118,7 +114,7 @@ function LeafletMap({
                 <div>latitude: {marker.position.lat}</div>
                 <div>longitude: {marker.position.lng}</div>
                 {!verifyPolylineExists(marker.position) ? (
-                  <button type="button" onClick={() => handleAddPolyline(marker.position, distanceInMeters)}>
+                  <button type="button" onClick={() => handleAddPolyline(marker.position)}>
                     Marcar rota
                   </button>
                 ) : (
