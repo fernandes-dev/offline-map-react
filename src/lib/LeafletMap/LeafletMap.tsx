@@ -36,6 +36,7 @@ function LeafletMap({
   const [_progressSaveMap, _setProgressSaveMap] = useState(0)
   const [_totalLayersToSave, _setTotalLayersToSave] = useState(0)
   const [_heatPoints, _setHeatPoints] = useState<IHeatPoint[]>(heatPoints || [])
+  const [_accuracy, _setAccuracy] = useState<number>()
 
 
   function navigateToPosition(position = _userPosition, zoomLevel = DEFAULT_MAP_ZOOM): void {
@@ -96,6 +97,15 @@ function LeafletMap({
     _setPolylines([])
   }
 
+  const calibrateGpsTutorial = () => {
+    return <>
+       <span id="calibrate-gps-message">
+          A precisão do GPS está muito baixa, por favor, tente calibrar o GPS do seu dispositivo.
+        </span>
+      <img id="calibrate-gps-image" src="https://i.imgur.com/yEu6fEF.gif" alt="calibrar gps"/>
+    </>
+  }
+
   const renderCheckpoints = () => {
     return (
       checkpoints.length > 0 &&
@@ -141,6 +151,10 @@ function LeafletMap({
           lng: position.coords.longitude
         }))
       }
+
+      navigator.geolocation.watchPosition(a => {
+        _setAccuracy(Math.floor(a.coords.accuracy))
+      })
     }, [])
 
     useEffect(() => {
@@ -253,7 +267,9 @@ function LeafletMap({
     totalLayersToSave: _totalLayersToSave,
     userPosition: _userPosition,
     map: _map,
-    offlineMapControls
+    offlineMapControls,
+    calibrateGpsTutorial,
+    accuracy: _accuracy,
   }
 }
 

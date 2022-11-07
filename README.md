@@ -141,6 +141,16 @@ function App() {
           </progress>
         )
       }
+
+      {/* show gps accuracy */}
+      <div>
+        GPS Accuracy: {mapInstance?.accuracy} meters
+      </div>
+
+      {/* show tutorial do calibrate gps */}
+      <div>
+        {mapInstance?.calibrateGpsTutorial()}
+      </div>
     </div>
   );
 
