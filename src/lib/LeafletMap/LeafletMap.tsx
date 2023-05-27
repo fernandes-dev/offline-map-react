@@ -240,6 +240,12 @@ function LeafletMap({
     }
   }
 
+  function resetHeatLayerRender() {
+    const elements = document.getElementsByClassName('leaflet-pane leaflet-overlay-pane')
+
+    ;(elements?.[0] as any)?.click()
+  }
+
   function addUserLocationHandler(): void {
     if (!_map) return
 
@@ -254,12 +260,20 @@ function LeafletMap({
     _map.on('locationfound', e => {
       _setUserPosition(e.latlng)
     })
+
+    _map.on('click', (e: any) => {
+      if (e?.originalEvent?.pointerType !== '') return
+
+      handleSetHeatPoints(heatPoints)
+    })
+
   }
 
   return {
     renderMap,
     setMapViewOnUserLocation,
     navigateToPosition,
+    resetHeatLayerRender,
     setHeatPoints: handleSetHeatPoints,
     heatPoints: _heatPoints,
     heatLayer,

@@ -151,6 +151,11 @@ function App() {
       <div>
         {mapInstance?.calibrateGpsTutorial()}
       </div>
+
+      {/* reset heatlayer render */}
+      <div>
+        {mapInstance?.resetHeatLayerRender()}
+      </div>
     </div>
   );
 
